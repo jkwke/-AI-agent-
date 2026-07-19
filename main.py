@@ -13,7 +13,7 @@ class AIChatAssistant:
     def __init__(self):
         """初始化AI聊天助手"""
         load_dotenv()
-        os.environ["DEEPSEEK_API_KEY"] = os.getenv("OPENAI_API_KEY")
+        os.environ["DEEPSEEK_API_KEY"] = os.getenv("DEEPSEEK_API_KEY")
 
         tool_have = []
         if hasattr(tools, '__all__'):
@@ -26,7 +26,7 @@ class AIChatAssistant:
         self.agent = create_agent(
             model="deepseek-chat",
             tools=tool_have,
-            system_prompt="你是一个文件管理助手。"
+            system_prompt="你是一个文件管理助手，叫小D"
                           "对于任何涉及文件增删改查的操作，你必须调用相应的工具，严禁仅用文字回复‘已完成’。"
                           "如果工具执行失败，必须向用户报错。"
         )
@@ -75,7 +75,9 @@ class AIChatAssistant:
                     # 处理工具返回结果
                     elif isinstance(msg, ToolMessage):
                         called_tool_flag = True
-                        print(f"\n{Fore.YELLOW}[系统: 正在调用工具 {msg.name}...]{Style.RESET_ALL}", flush=True)
+                        # 使用工具名称映射显示中文名称
+                        tool_display_name = tools.tool_name_zh_map.get(msg.name, msg.name)
+                        print(f"\n{Fore.YELLOW}[Agent: 正在调用工具 '{tool_display_name}']{Style.RESET_ALL}", flush=True)
                         tool_messages.append(msg)
 
                 print("", flush=True)
